@@ -1,4 +1,5 @@
 import numpy as np
+import cv2
 
 def compute_histogram_intersection(img1: np.ndarray, img2: np.ndarray) -> float:
     """
@@ -26,9 +27,30 @@ def compute_histogram_intersection(img1: np.ndarray, img2: np.ndarray) -> float:
         raise ValueError("Both input images must be 2D grayscale arrays.")
 
     ### START CODE HERE ###
-    # Step 1: initialize base image with 0.5
-    intersection = 0.0
+    
+    hist1, _ = np.histogram(img1, bins=256, range=(0, 256), density=True)
+    hist2, _ = np.histogram(img2, bins=256, range=(0, 256), density=True)
+    
+    
+    intersection = np.sum(np.minimum(hist1, hist2))
     ### END CODE HERE ###
 
-
     return float(intersection)
+
+
+if __name__ == "__main__":
+    # Caminhos das imagens
+    img1_path = "../../img/head.png"
+    img2_path = "../../img/head_filtered.png"
+
+    # Carregar imagens em escala de cinza
+    img1 = cv2.imread(img1_path, cv2.IMREAD_GRAYSCALE)
+    img2 = cv2.imread(img2_path, cv2.IMREAD_GRAYSCALE)
+
+    # Verificação
+    if img1 is None or img2 is None:
+        raise FileNotFoundError(f"Não foi possível carregar {img1_path} ou {img2_path}")
+
+    # Calcula interseção de histograma
+    score = compute_histogram_intersection(img1, img2)
+    print(f"Pontuação de interseção do histograma: {score:.4f}")
